@@ -1,67 +1,143 @@
-# Cours : Les Invariants du Web et les Patterns Transversaux
-
-Pour ne plus jamais être pris au dépourvu face à un nouveau framework (que ce soit Angular, React, Vue, Svelte ou le prochain à la mode), il faut comprendre une vérité simple : **les outils changent tous les 3 ans, mais les problèmes informatiques du web sont les mêmes depuis 20 ans.**
-
-Voici les **5 invariants du web** et les grands patterns qui y répondent. Si tu maîtrises ça, tu comprends n'importe quelle archi front-end en surface en quelques heures.
+Voici la structure complète et détaillée des **6 modules de la formation Invariants du Web & Architecture Front-End**. Ce sommaire servira de table des matières exhaustive pour ton document de référence (README).
 
 ---
 
-## 1. L'Invariant 1 : La Réactivité (L'État vs l'UI)
+# 📚 Plan de Formation : Invariants du Web & Architecture Front-End
 
-* **Le Problème :** L'utilisateur clique, une donnée change (ex: le panier passe de 0 à 1 article). Comment on s'assure que l'écran (le DOM) se met à jour automatiquement sans que le dev ait à modifier le HTML à la main (`document.getElementById...`) ?
-* **Les Solutions (Patterns) à travers les frameworks :**
-* **Angular (Signals / RxJS) :** On déclare un état observable. Quand la valeur change, le système déclenche un mécanisme de mise à jour ciblée (Change Detection).
-* **React (`useState`) :** Un composant est une fonction pure de son état. Quand l'état change, *tout* le composant est réexécuté (re-render) pour recréer un nouveau Virtual DOM.
-* **Vue (`Refs` / Vue 3 Composition API) :** Utilisation de Proxies JavaScript pour intercepter les modifications de variables et mettre à jour le DOM de manière chirurgicale.
+---
 
+## 🏛️ Module 1 : Le Moteur du Navigateur & le Critical Rendering Path
 
-* **Ce qu'il faut retenir :** Tout framework moderne n'est qu'un "moteur de synchronisation" entre des données en mémoire (State) et des pixels sur l'écran (UI).
+*Comprendre la mécanique de transformation du code brut en pixels et l'impact sur la fluidité d'affichage.*
 
-## 2. L'Invariant 2 : L'Arbre de Composants et le Flux de Données
-
-* **Le Problème :** Une application web complexe ne peut pas être un seul gros fichier de code. On la découpe en briques réutilisables (Composants). Comment ces briques communiquent-elles entre elles ?
-* **Les Solutions (Patterns) :**
-* **Le flux descendant (Top-Down / Props & Events) :** Le parent donne des données aux enfants (props en React/Vue, `@Input` en Angular). L'enfant remonte les actions aux parents via des notifications (events, `@Output`, callbacks).
-* **L'état global / Partagé (Store) :** Quand deux composants très éloignés dans l'arbre ont besoin de la même donnée (ex: l'utilisateur connecté), on sort la donnée de l'arbre pour la mettre dans un conteneur global (NgRx, Redux, Pinia, Signals globaux).
+* **1.1 La chaîne de rendu critique (Critical Rendering Path) :**
+* **HTML $\rightarrow$ DOM** (*Document Object Model*) : Parsing, jetons (tokens) et construction de l'arbre.
+* **CSS $\rightarrow$ CSSOM** (*CSS Object Model*) : Cascade, spécificité et coût du calcul des règles.
+* **Render Tree** : Fusion du DOM et du CSSOM (filtrage des éléments non affichés comme `display: none`).
 
 
-
-## 3. L'Invariant 3 : Le Cycle de Vie et la Gestion des Ressources (Memory Leaks)
-
-* **Le Problème :** Un composant naît, vit (reçoit des clics, appelle des API), puis meurt (l'utilisateur change de page). Si on oublie de nettoyer derrière soi (ex: un écouteur d'événement `window.addEventListener`, un `setInterval`, ou un abonnement réseau), la mémoire s'accumule et l'app ralentit (fuite de mémoire / memory leak).
-* **Les Solutions (Patterns) :**
-* **Les hooks de cycle de vie :** Chaque framework propose des méthodes ou des fonctions pour exécuter du code à l'initialisation (ex: `ngOnInit`, `useEffect` avec tableau vide, `onMounted`) et au nettoyage (ex: `ngOnDestroy`, fonction de cleanup dans `useEffect`, `onUnmounted`).
+* **1.2 La géométrie et la peinture à l'écran :**
+* **Layout / Reflow** : Calcul des coordonnées géométriques ($x, y, \text{largeur}, \text{hauteur}$) et propagation dans l'arbre.
+* **Paint / Repaint** : Remplissage des pixels (couleurs, ombres, bordures).
+* **Composite** : Assemblage des calques (*layers*) sur le GPU via les propriétés optimisées (`transform`, `opacity`).
 
 
-
-## 4. L'Invariant 4 : L'I/O Asynchrone (Le Réseau et le Rendering)
-
-* **Le Problème :** Le JavaScript s'exécute par défaut sur un seul thread (single-thread). Si on attend une réponse de serveur (API) ou qu'on fait un calcul lourd, l'interface se fige (le navigateur freeze, l'animation saccade).
-* **Les Solutions (Patterns) :**
-* **L'asynchronisme natif :** Utilisation des `Promises`, des `async/await` ou des flux réactifs (`RxJS`) pour déléguer l'attente au système et libérer le thread principal.
-* **L'isolation :** Les Web Workers (qu'on a vus) pour pousser les gros calculs hors du thread principal.
-
-
-
-## 5. L'Invariant 5 : Le Découplage et l'Architecture (Modularité)
-
-* **Le Problème :** Comment éviter que le code devienne une soupe infâme de 50 000 lignes où tout est lié à tout ?
-* **Les Solutions (Patterns) :**
-* **L'Injection de Dépendances (DI) :** (Qu'on vient de bosser). Séparer la logique métier (services) de l'affichage (composants).
-* **La séparation des responsabilités (SoC - Separation of Concerns) :** La vue gère l'UI, le service gère la data/API, les routes gèrent la navigation.
+* **1.3 Stratégies de chargement et d'exécution des ressources :**
+* Scripting : Différences fondamentales entre `<script>`, `<script async>` et `<script defer>`.
+* Optimisation du réseau : Utilisation des directives d'en-tête `<link rel="preload">`, `prefetch`, `preconnect` et `dns-prefetch`.
 
 
 
 ---
 
-### Pourquoi cette grille de lecture te protège ?
+## ⚙️ Module 2 : Moteur JS, Event Loop & Gestion Mémoire
 
-Le jour où tu arrives dans une boîte qui fait du **React** ou du **Vue**, tu ne perds pas ton temps à apprendre la syntaxe en panique. Tu arrives avec ton cerveau d'ingénieur en te disant :
+*Maîtriser l'exécution mono-thread du JavaScript, l'asynchronisme et la prévention des fuites mémoire.*
 
-1. *Où est stocké l'état dans leur système ?*
-2. *Comment ils gèrent le cycle de vie pour nettoyer la mémoire ?*
-3. *Comment les composants se parlent ?*
+* **2.1 L'architecture du moteur JS (ex: V8) :**
+* **Call Stack** : Empilement et exécution synchrone des contextes d'exécution.
+* **Memory Heap** : Allocation dynamique de la mémoire (objets, tableaux, closures).
 
-Une fois que tu as coché ces 3 cases, tu es opérationnel.
 
-Est-ce que cette vision macro des invariants te paraît claire pour aborder n'importe quel écosystème front-end ?
+* **2.2 L'Event Loop (Boucle d'événements) :**
+* **Macro-tasks (Task Queue)** : `setTimeout`, `setInterval`, `requestAnimationFrame`, I/O, événements DOM.
+* **Micro-tasks (Microtask Queue)** : `Promise.then/catch/finally`, `queueMicrotask`, `MutationObserver`.
+* **Ordonnancement et fréquence de rafraîchissement** : Priorité des micro-tasks, synchronisation avec les 60 FPS ($16.6\text{ms}$ par frame).
+
+
+* **2.3 Gestion de la mémoire et Garbage Collection :**
+* **Garbage Collector** : Algorithme *Mark-and-Sweep* (accessibilité depuis la racine / *GC Root*).
+* **Fuites mémoire (Memory Leaks) en SPA** : Abonnements non résiliés (RxJS/Events), références retained par des closures, éléments DOM détachés conservés en mémoire.
+
+
+
+---
+
+## 🌐 Module 3 : Communication, Protocoles & Asynchronisme
+
+*Comprendre comment les données transitent entre le client et le serveur, et choisir le bon canal de communication.*
+
+* **3.1 L'évolution du protocole HTTP :**
+* **HTTP/1.1** : Connexions persistantes (*Keep-Alive*), mais blocage en tête de ligne (*Head-of-Line Blocking* sur TCP).
+* **HTTP/2** : Multiplexage de requêtes sur une seule connexion TCP, compression d'en-têtes HPACK, Server Push.
+* **HTTP/3 (QUIC)** : Transit sur UDP, élimination du Head-of-Line blocking au niveau réseau, Poignée de main (*Handshake*) accélérée.
+
+
+* **3.2 Architectures et modes de communication dynamique :**
+* **Polling vs Long Polling** : Reconstitution d'un flux par requêtes périodiques ou maintenues.
+* **Server-Sent Events (SSE)** : Flux unidirectionnel persistant du serveur vers le client basé sur le protocole HTTP (streaming text/event-stream).
+* **WebSockets** : Protocole duplex bidirectionnel temps réel sur TCP (Handshake HTTP initial puis upgrade de socket).
+
+
+* **3.3 Paradigmes d'API :**
+* **REST** : Verbes HTTP, statut, stateless, niveau de maturité Richardson.
+* **GraphQL / gRPC-Web** : Réponses ciblées côté client vs requêtes binaires sur Protobuf.
+
+
+
+---
+
+## 🛡️ Module 4 : Sécurité Web Front-End
+
+*Identifier les vecteurs d'attaque sur le navigateur et appliquer les mécanismes de défense en profondeur.*
+
+* **4.1 Les attaques côté client :**
+* **XSS (Cross-Site Scripting)** : Injections de scripts malveillants (*Stored*, *Reflected*, *DOM-based*). Moteur de sanitization des frameworks.
+* **CSRF (Cross-Site Request Forgery)** : Exécution de requêtes non sollicitées via la session de l'utilisateur.
+
+
+* **4.2 Protections et en-têtes HTTP de sécurité :**
+* **SameSite Cookies** : Directives `Strict`, `Lax`, `None` pour contrer le CSRF.
+* **CORS (Cross-Origin Resource Sharing)** : Mécanisme de sécurité du navigateur, requêtes *Preflight* (`OPTIONS`), en-têtes `Access-Control-Allow-*`.
+* **CSP (Content Security Policy)** : Restriction des sources d'exécution via les directives `script-src`, `style-src`, `connect-src`.
+
+
+* **4.3 Stockage sécurisé des données :**
+* Comparatif critique : `localStorage` vs `sessionStorage` vs **Cookies `HttpOnly` + `Secure**`.
+
+
+
+---
+
+## 🧩 Module 5 : Invariants des Frameworks & Paradigmes d'Architecture
+
+*Décoder la mécanique interne des frameworks modernes (Angular, React, Vue, Svelte).*
+
+* **5.1 Synchronisation de l'état et de l'interface (State vs UI) :**
+* **Virtual DOM vs Dirty Checking vs Proxies / Directives de compilation**.
+* **Réactivité à base de Signaux (Signals)** : Graphe de dépendances à ciblage fin (*fine-grained reactivity*) vs Réévaluation globale de composants.
+
+
+* **5.2 Principes de conception et découplage :**
+* **Injection de Dépendances (DI)** : Inversion de contrôle (IoC), portées (*Hierarchical Injectors*), modularité et testabilité.
+* **Séparation des Responsabilités (SoC)** : Conteneurs logique métier (Services/Stores) vs Composants d'affichage (Presentational Components).
+* **State Management** : Gestion d'état local vs état global immuable (Redux/NgRx/Signals store).
+
+
+* **5.3 Cycles de vie et découplage :**
+* Hooks d'initialisation, de détection de changement et de nettoyage (*cleanup*).
+
+
+
+---
+
+## 🚀 Module 6 : Architectures de Rendu, Métriques (Core Web Vitals) & Offline
+
+*Optimiser l'expérience utilisateur, le référencement et la résilience réseau.*
+
+* **6.1 Stratégies de rendu applicatif :**
+* **CSR (Client-Side Rendering)** : Fonctionnement des SPAs, compromis sur le premier affichage et le SEO.
+* **SSR (Server-Side Rendering)** : Rendu serveur, problématique de l'hydratation (Island Architecture / Progressive Hydration).
+* **SSG (Static Site Generation) & ISR (Incremental Static Regeneration)** : Pré-rendu à la compilation.
+
+
+* **6.2 Performance et mesure (Core Web Vitals) :**
+* **LCP** (*Largest Contentful Paint*) : Mesure de la vitesse de chargement perçue.
+* **INP** (*Interaction to Next Paint*) : Mesure de la réactivité aux interactions.
+* **CLS** (*Cumulative Layout Shift*) : Mesure de la stabilité visuelle.
+* **Techniques d'optimisation** : *Tree-shaking*, *Bundle Splitting*, *Dynamic Imports*, *Debounce/Throttle*, offloading via *Web Workers*.
+
+
+* **6.3 Mode hors-ligne et stockage lourd (PWA) :**
+* **Service Workers & Cache API** : Interception réseau, stratégies de mise en cache (*Cache-First*, *Network-First*, *Stale-While-Revalidate*).
+* **IndexedDB** : Base de données NoSQL asynchrone côté client pour la gestion de volumes importants.
